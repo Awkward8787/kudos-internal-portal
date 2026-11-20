@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Moderation{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h1>Moderate kudos</h1>
+    <p class="lede">Hide or delete messages that should not stay on the public feed.</p>
+  </div>
+</section>
+
+{% if feed['items'] %}
+  <ol class="feed">
+    {% for item in feed['items'] %}
+      <li class="card kudos {% if not item.is_visible %}is-hidden{% endif %}">
+        <p class="kudos-meta">
+          <strong>{{ item.from_user.display_name }}</strong>
+          gave kudos to
+          <strong>{{ item.to_user.display_name }}</strong>
+          {% if not item.is_visible %}<span class="badge">Hidden</span>{% endif %}
+        </p>
+        <p class="kudos-message">{{ item.message }}</p>
+        <time class="kudos-time" datetime="{{ item.created_at }}">{{ item.created_at }}</time>
+        {% if item.reason_for_moderation %}
+          <p class="mod-reason">
+            Last moderation
+            {% if item.moderated_by %}by {{ item.moderated_by.display_name }}{% endif %}
+            {% if item.moderated_at %} at {{ item.moderated_at }}{% endif %}:
+            {{ item.reason_for_moderation }}
+          </p>
+        {% endif %}
+        <div class="mod-actions">
+          {% if item.is_visible %}
+            <form method="post" action="{{ url_for('pages.admin_hide', kudos_id=item.id) }}" class="stack compact">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <label>
+                Reason to hide
+                <input type="text" name="reason" maxlength="500" required placeholder="Why is this being hidden?">
+              </label>
+              <button type="submit" class="button secondary">Hide</button>
+            </form>
+          {% else %}
+            <form method="post" action="{{ url_for('pages.admin_unhide', kudos_id=item.id) }}" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <input type="hidden" name="reason" value="Restored to the public feed.">
+              <button type="submit" class="button secondary">Restore</button>
+            </form>
+          {% endif %}
+          <form method="post" action="{{ url_for('pages.admin_delete', kudos_id=item.id) }}" class="inline" onsubmit="return confirm('Delete this kudos permanently? This cannot be undone.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit" class="button danger">Delete</button>
+          </form>
+        </div>
+      </li>
+    {% endfor %}
+  </ol>
+  {% if feed['total_pages'] > 1 %}
+    <nav class="pager" aria-label="Pagination">
+      {% if feed['page'] > 1 %}
+        <a href="{{ url_for('pages.admin', page=feed['page'] - 1) }}">Previous</a>
+      {% endif %}
+      <span>Page {{ feed['page'] }} of {{ feed['total_pages'] }}</span>
+      {% if feed['page'] < feed['total_pages'] %}
+        <a href="{{ url_for('pages.admin', page=feed['page'] + 1) }}">Next</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <p class="empty">There are no kudos to moderate.</p>
+{% endif %}
+{% endblock %}

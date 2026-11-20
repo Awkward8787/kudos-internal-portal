@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<section class="panel narrow">
+  <h1>Sign in</h1>
+  <p class="lede">Use your portal account to give and view kudos.</p>
+  <form method="post" action="{{ url_for('pages.login') }}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>
+      Username
+      <input type="text" name="username" autocomplete="username" required autofocus>
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="button">Sign in</button>
+  </form>
+</section>
+{% endblock %}

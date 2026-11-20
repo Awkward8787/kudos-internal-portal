@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <h1>Recent kudos</h1>
+    <p class="lede">Appreciation posted by colleagues across the portal.</p>
+  </div>
+  <a class="button" href="{{ url_for('pages.give') }}">Give kudos</a>
+</section>
+
+{% if feed['items'] %}
+  <ol class="feed">
+    {% for item in feed['items'] %}
+      <li class="card kudos">
+        <p class="kudos-meta">
+          <strong>{{ item.from_user.display_name }}</strong>
+          gave kudos to
+          <strong>{{ item.to_user.display_name }}</strong>
+        </p>
+        <p class="kudos-message">{{ item.message }}</p>
+        <time class="kudos-time" datetime="{{ item.created_at }}">{{ item.created_at }}</time>
+      </li>
+    {% endfor %}
+  </ol>
+  {% if feed['total_pages'] > 1 %}
+    <nav class="pager" aria-label="Pagination">
+      {% if feed['page'] > 1 %}
+        <a href="{{ url_for('pages.dashboard', page=feed['page'] - 1) }}">Previous</a>
+      {% endif %}
+      <span>Page {{ feed['page'] }} of {{ feed['total_pages'] }}</span>
+      {% if feed['page'] < feed['total_pages'] %}
+        <a href="{{ url_for('pages.dashboard', page=feed['page'] + 1) }}">Next</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <p class="empty">No kudos have been posted yet. Be the first to recognize a colleague.</p>
+{% endif %}
+{% endblock %}
