@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Give kudos{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>Give kudos</h1>
+  <p class="lede">Choose a colleague and write a short message of appreciation.</p>
+  <form method="post" action="{{ url_for('pages.give') }}" class="stack" id="give-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>
+      Colleague
+      <select name="to_user_id" required>
+        <option value="" disabled {% if not request.form.get('to_user_id') %}selected{% endif %}>Select a colleague</option>
+        {% for person in colleagues %}
+          <option value="{{ person.id }}" {% if request.form.get('to_user_id')|string == person.id|string %}selected{% endif %}>
+            {{ person.display_name }} ({{ person.username }})
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Message
+      <textarea name="message" id="message" rows="5" maxlength="500" required>{{ request.form.get('message', '') }}</textarea>
+    </label>
+    <p class="count"><span id="char-count">0</span> / 500</p>
+    <button type="submit" class="button">Submit kudos</button>
+  </form>
+</section>
+<script src="{{ url_for('static', filename='give.js') }}"></script>
+{% endblock %}

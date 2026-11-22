@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not allowed{% endblock %}
+{% block content %}
+<section class="panel narrow">
+  <h1>Not allowed</h1>
+  <p class="lede">This page is only available to administrators.</p>
+  <p><a href="{{ url_for('pages.dashboard') }}">Back to the feed</a></p>
+</section>
+{% endblock %}
