@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  APP_ENV: ci
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Show CI context
+        run: |
+          echo "APP_ENV=${APP_ENV}"
+          echo "repository=${{ github.repository }}"
+          echo "ref_name=${{ github.ref_name }}"
+          echo "sha=${{ github.sha }}"
+          echo "DEPLOY_ENV=${{ vars.DEPLOY_ENV || 'development' }}"
+
+      - name: Run tests
+        run: python -m pytest -q

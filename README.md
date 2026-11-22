@@ -65,6 +65,14 @@ pytest -v
 
 Each test uses its own temporary SQLite database. The suite covers authentication, validation, the feed, duplicates, the rate limit, moderation, and HTML escaping.
 
+## Continuous integration
+
+[![CI](https://github.com/Awkward8787/kudos-internal-portal/actions/workflows/ci.yml/badge.svg)](https://github.com/Awkward8787/kudos-internal-portal/actions/workflows/ci.yml)
+
+The `CI` workflow (`.github/workflows/ci.yml`) runs on every push and pull request to `main`, and it can be started manually with `workflow_dispatch`. The `test` job uses `ubuntu-latest` and a Python matrix of 3.11 and 3.12. It checks out the repository, sets up Python with a pip cache, installs `requirements.txt` (pytest is already pinned there), and runs `python -m pytest -q`.
+
+The workflow sets `APP_ENV` to `ci` and prints that value along with `github.repository`, `github.ref_name`, and `github.sha`. An optional repository variable, `DEPLOY_ENV`, is read when it is set; otherwise the step uses `development`.
+
 ## License
 
 Copyright (C) 2026 Anthony Jones.
